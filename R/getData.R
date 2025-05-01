@@ -5,7 +5,7 @@
 #'
 #' @param type the type of data that is wished to be extracted
 #' (either `om`, `om_date`, `salary`, `salary_date`, `collaboration`,
-#' `statusReport`, or `tags`).The types that end in `_date` will return the
+#' `statusReport`, `fieldnotes` or `tags`).The types that end in `_date` will return the
 #' date of creation of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
@@ -47,7 +47,7 @@
 #' data <- getData(type="salary", cookie=cookie)
 #' head(data,2)
 #' }
-#' @author Jaimie Harbin and Remi Daigle
+#' @author Jaimie Harbin and Remi Daigle (with minor Fieldnotes contribution from Freya Keyser)
 #' @export
 #' @examples
 #' \dontrun{
@@ -63,15 +63,15 @@
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(type)) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', 'fieldnotes' or 'tags'")
   }
 
   if (is.null(cookie)) {
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags"))) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "fieldnotes", "tags"))) {
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', 'fieldnotes', or 'tags'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -145,6 +145,25 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
   }
 
+  if(type %in% c("fieldnotes")){
+    if (age > 0) {
+      # Look for files in path, only return the file the matches pattern
+      fn <- file.path(path, "dataSPA_fieldnotes.rds")
+
+      if(file.exists(fn)){
+        # Load file if more recent than `keep` days old
+        d <- as.Date(file.info(fn)$mtime)
+        if((Sys.Date()-d)<age){ # if this is false, it's out of date
+          if(type=="fieldnotes"){
+            fieldnotes <- readRDS(file = fn)
+            message(paste0("loading file from disk(",fn,")"))
+            return(fieldnotes)
+          } else("dataSPA_fieldnotes.rds is out of date")
+        }
+      }
+    }
+  }
+
   # FIXME: can't yet cache for collaborations or statusReport
   load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
 
@@ -155,6 +174,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/","https://dmapps/api/ppt/staff", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/", "https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type %in% c("om", "om_date")) {
     links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
+    else if (type %in% c("fieldnotes")) {
+      links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/", "https://dmapps/api/ppt/fieldnotes/")
   } else if (type == "collaboration") {
     links <- c("https://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
@@ -193,6 +214,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
 
     if (type %in% c("om", "salary") && links[i] %in% c("https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/")) {
+      api_data <- page_data
+    }
+
+    if (type %in% c("fieldnotes") && links[i] %in% c("https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/fieldnotes")) {
       api_data <- page_data
     }
 
@@ -1207,4 +1232,77 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     return(st)
   }
+
+  #to edit!!
+  if (type == "fieldnotes") {
+    # st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 15), row.names = NULL)
+    # names(st) <- c("project_id","target_completion_date_display", "status_display", "supporting_resources",
+    #                "major_accomplishments", "major_issues", "excess_funds_comment", "excess_funds_amt", "excess_funds",
+    #                "insufficient_funds", "insufficient_funds_amt", "insufficient_funds_comment",
+    #                "rationale_for_modified_completion_date", "general_comment", "project_year")
+    #
+    #
+    # for (i in seq_along(API_DATA[[1]])) {
+    #   for (j in seq_along(names(st))) {
+    #     parameter <- API_DATA[[1]][[i]][[names(st[j])]]
+    #     if (is.null(parameter)) {
+    #       API_DATA[[1]][[i]][[names(st[j])]] <- 0
+    #     }
+    #     st[[names(st[j])]][[i]] <- API_DATA[[1]][[i]][[names(st[j])]]
+    #   }
+    # }
+    # st$general_comment <- unlist(lapply(API_DATA[[1]], function(x) x$general_comment))
+    # st$rationale_for_modified_completion_date <- unlist(lapply(API_DATA[[1]], function(x) x$rationale_for_modified_completion_date))
+    # # Now add fiscal year in from the project_year id
+    #
+    # # Dealing with [[2]]
+    # # Dealing with project
+    # df <- lapply(API_DATA[[2]], function(x) x$project)
+    #
+    # for (i in seq_along(df)) {
+    #   for (j in seq_along(names(df[[1]]))) {
+    #     parameter <- df[[i]][[names(df[[1]][j])]]
+    #     if (is.null(parameter)) {
+    #       df[[i]][[names(df[[1]][j])]] <- 0
+    #     }
+    #   }
+    # }
+    # # Turning into data frames for project_id
+    # DF <- data.frame(matrix(NA, nrow = length(API_DATA[[2]]), ncol = 2), row.names = NULL)
+    # names(DF) <- c("title", "project_id")
+    # DF$title <- unlist(lapply(df, function(x) x$title))
+    # DF$project_id <- unlist(lapply(df, function(x) x$id))
+    #
+    # # Dealing with year
+    # df2 <- lapply(API_DATA[[2]], function(x) x$project$years)
+    # df22 <- do.call(c, df2)
+    # for (i in seq_along(df22)) {
+    #   for (j in seq_along(names(df22[[1]]))) {
+    #     parameter <- df22[[i]][[names(df22[[1]][j])]]
+    #     if (is.null(parameter)) {
+    #       df22[[i]][[names(df22[[1]][j])]] <- 0
+    #     }
+    #   }
+    # }
+    # DF2 <- data.frame(matrix(NA, nrow = length(df22), ncol = 4), row.names = NULL)
+    # names(DF2) <- c("year_id", "fiscal_year", "project_title", "project_id")
+    # DF2$year_id <- unlist(lapply(df22, function(x) x$id))
+    # DF2$project_title <- unlist(lapply(df22, function(x) x$project_title))
+    # DF2$fiscal_year <- unlist(lapply(df22, function(x) x$display_name))
+    # DF2$project_id <- unlist(lapply(df22, function(x) x$project))
+    #
+    # st_id <- st$project_id
+    # st$project_title <- 0
+    # st$fiscal_year <- 0
+    # for (i in seq_along(st_id)) {
+    #   st$project_title[i] <- unique(DF$title[which(DF$project_id == st_id[i])])
+    # }
+    # for (i in seq_along(st_id)) {
+    #   st$fiscal_year[i] <- unique(DF2$fiscal_year[which(DF2$year_id == st$project_year[i])])
+    #
+    # }
+    #
+    # return(st)
+  }
+
 }
