@@ -80,64 +80,64 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # LOADING CACHED DATA
   if(type %in% c("om", "om_date")){
     if (age > 0) {
-    # Look for files in path, only return the file the matches pattern
-    fn <- file.path(path,"dataSPA_om.rds")
+      # Look for files in path, only return the file the matches pattern
+      fn <- file.path(path,"dataSPA_om.rds")
 
-    if(file.exists(fn)){
-      # Load file if more recent than `keep` days old
-      d <- as.Date(file.info(fn)$mtime)
-      if((Sys.Date()-d)<age){ # if this is false, it's out of date
-        if(type=="om"){
-          om <- readRDS(file = fn)
-          message(paste0("loading file from disk(",fn,")"))
-          return(om)
-        } else if(type=="om_date"){
-          message(paste0("returning date from file on disk(",fn,")"))
-          return(d)
-        }
+      if(file.exists(fn)){
+        # Load file if more recent than `keep` days old
+        d <- as.Date(file.info(fn)$mtime)
+        if((Sys.Date()-d)<age){ # if this is false, it's out of date
+          if(type=="om"){
+            om <- readRDS(file = fn)
+            message(paste0("loading file from disk(",fn,")"))
+            return(om)
+          } else if(type=="om_date"){
+            message(paste0("returning date from file on disk(",fn,")"))
+            return(d)
+          }
 
-      } else {
-        if (type == "om_date") {
-          stop("The saved om data is out of date compared to your age argument. Consider saving a new om data using getData(type='om',keep=TRUE) or increasing your age argument")
+        } else {
+          if (type == "om_date") {
+            stop("The saved om data is out of date compared to your age argument. Consider saving a new om data using getData(type='om',keep=TRUE) or increasing your age argument")
+          }
         }
+      } else if(type=="om_date"){
+        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
       }
-    } else if(type=="om_date"){
-      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
-    }
     } else {
       if (type == "om_date") {
         stop("The saved om data is out of date compared to your age argument. Consider saving a new om data using getData(type='om',keep=TRUE) or increasing your age argument")
       }
-  }
+    }
 
-}
+  }
 
   if(type %in% c("salary", "salary_date")){
     if (age > 0) {
-    # Look for files in path, only return the file the matches pattern
-    fn <- file.path(path,"dataSPA_SAL.rds")
+      # Look for files in path, only return the file the matches pattern
+      fn <- file.path(path,"dataSPA_SAL.rds")
 
-    if(file.exists(fn)){
-      # Load file if more recent than `keep` days old
-      d <- as.Date(file.info(fn)$mtime)
-      if((Sys.Date()-d)<age){
-        if(type=="salary"){
-          SAL <- readRDS(file = fn)
-          message(paste0("loading file from disk(",fn,")"))
-          return(SAL)
-        } else if(type=="salary_date"){
-          message(paste0("returning date from file on disk(",fn,")"))
-          return(d)
-        }
+      if(file.exists(fn)){
+        # Load file if more recent than `keep` days old
+        d <- as.Date(file.info(fn)$mtime)
+        if((Sys.Date()-d)<age){
+          if(type=="salary"){
+            SAL <- readRDS(file = fn)
+            message(paste0("loading file from disk(",fn,")"))
+            return(SAL)
+          } else if(type=="salary_date"){
+            message(paste0("returning date from file on disk(",fn,")"))
+            return(d)
+          }
 
-      } else {
-        if (type == "salary_date") {
-          stop("The saved salary data is out of date compared to your age argument. Consider saving a new salary data using getData(type='salary',keep=TRUE) or increasing your age argument")
+        } else {
+          if (type == "salary_date") {
+            stop("The saved salary data is out of date compared to your age argument. Consider saving a new salary data using getData(type='salary',keep=TRUE) or increasing your age argument")
+          }
         }
+      } else if(type=="salary_date"){
+        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
       }
-    } else if(type=="salary_date"){
-      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
-    }
     } else {
       if (type == "salary_date") {
         stop("The saved salary data is out of date compared to your age argument. Consider saving a new salary data using getData(type='salary',keep=TRUE) or increasing your age argument")
@@ -174,8 +174,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/","https://dmapps/api/ppt/staff", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/", "https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type %in% c("om", "om_date")) {
     links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
-    else if (type %in% c("fieldnotes")) {
-      links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/", "https://dmapps/api/ppt/fieldnotes/")
+  }  else if (type %in% c("fieldnotes")) {
+    links <- #c("https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/",
+      c("https://dmapps/api/ppt/field-notes/?export=true")
   } else if (type == "collaboration") {
     links <- c("https://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
@@ -217,7 +218,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       api_data <- page_data
     }
 
-    if (type %in% c("fieldnotes") && links[i] %in% c("https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/fieldnotes")) {
+    if (type %in% c("fieldnotes") && links[i] %in% c("https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/field-notes/?export=true")) {
       api_data <- page_data
     }
 
@@ -227,7 +228,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
-      if (!(links[i] %in% c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/","https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/","https://dmapps/api/shared/branches/"))) {
+      if (!(links[i] %in% c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/","https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/","https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/field-notes/?export=true"))) {
         api_data <- page_data$results
 
         # Get the information about the next page in the API results
@@ -266,7 +267,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
             if(debug_page==1) {
               debug_page <- debug
               next_page <- NULL
-              }
+            }
           }
           cat(paste0(next_page, '\n'))
         }
@@ -396,11 +397,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     for (i in seq_along(p)) {
       for (j in jNames) {
-      if (length(p[[i]][[j]]) == 0) {
-        p[[i]][[j]] <- 0
-      } else if (is.na(p[[i]][[j]])) {
-        p[[i]][[j]] <- 0
-      }
+        if (length(p[[i]][[j]]) == 0) {
+          p[[i]][[j]] <- 0
+        } else if (is.na(p[[i]][[j]])) {
+          p[[i]][[j]] <- 0
+        }
       }
     }
     pp <- lapply(p, function(x) as.data.frame(x[c("id", "objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")])) ## NAMES USED HERE
@@ -543,56 +544,56 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## Getting divisions ids ("https://dmapps/api/ppt/divisions/")
 
   if (type %in% c("om", "salary")) {
-  division_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$id))
-  full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$display))
-  division_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$name))
+    division_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$id))
+    full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$display))
+    division_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$name))
 
-  duplicatedNamesDivision <- division_name[duplicated(division_name)]
-  DIVISION_NAME <- division_name
-  for (i in seq_along(duplicatedNamesDivision)) {
-    dn <- duplicatedNamesDivision[i]
-    fullname <- full_name[which(division_name == dn)]
-    regions <- sub(".*\\(", "(", fullname)
-    finalName <- paste0(dn," ", regions)
-    DIVISION_NAME[which(division_name == dn)] <- finalName
-  }
+    duplicatedNamesDivision <- division_name[duplicated(division_name)]
+    DIVISION_NAME <- division_name
+    for (i in seq_along(duplicatedNamesDivision)) {
+      dn <- duplicatedNamesDivision[i]
+      fullname <- full_name[which(division_name == dn)]
+      regions <- sub(".*\\(", "(", fullname)
+      finalName <- paste0(dn," ", regions)
+      DIVISION_NAME[which(division_name == dn)] <- finalName
+    }
 
-  ## /sections/
-   section_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$id))
-   full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$full_name))
-   section_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$name)) # Aquatic Animal Health, Species at Risk Program
-   if (any(section_name == "Centre for Science Advice -  Maritimes")) {
-     section_name[which(section_name == "Centre for Science Advice -  Maritimes")] <- "Centre for Science Advice Maritimes"
-   }
-   if (any(section_name == "Regional Science Director's Office")) {
-     section_name[which(section_name == "Regional Science Director's Office")] <- "Regional Director Science Office"
-   }
-   duplicatedNamesSection <- section_name[duplicated(section_name)]
-   SECTION_NAME <- section_name
-   for (i in seq_along(duplicatedNamesSection)) {
-   dn <- duplicatedNamesSection[i]
-   fullname <- full_name[which(section_name == dn)]
-   regions <- trimws(unlist(lapply(fullname, function(x) strsplit(x, "-")[[1]][1])), "right")
-   finalName <- paste0(dn, " (", regions, ")")
-   SECTION_NAME[which(section_name == dn)] <- finalName
-   }
+    ## /sections/
+    section_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$id))
+    full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$full_name))
+    section_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$name)) # Aquatic Animal Health, Species at Risk Program
+    if (any(section_name == "Centre for Science Advice -  Maritimes")) {
+      section_name[which(section_name == "Centre for Science Advice -  Maritimes")] <- "Centre for Science Advice Maritimes"
+    }
+    if (any(section_name == "Regional Science Director's Office")) {
+      section_name[which(section_name == "Regional Science Director's Office")] <- "Regional Director Science Office"
+    }
+    duplicatedNamesSection <- section_name[duplicated(section_name)]
+    SECTION_NAME <- section_name
+    for (i in seq_along(duplicatedNamesSection)) {
+      dn <- duplicatedNamesSection[i]
+      fullname <- full_name[which(section_name == dn)]
+      regions <- trimws(unlist(lapply(fullname, function(x) strsplit(x, "-")[[1]][1])), "right")
+      finalName <- paste0(dn, " (", regions, ")")
+      SECTION_NAME[which(section_name == dn)] <- finalName
+    }
 
-   ## /regions/
-   region_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$id))
-   region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$name))
+    ## /regions/
+    region_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$id))
+    region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$name))
 
-   ## /funding_sources/
-   fs_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$id))
-   fs_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$name))
+    ## /funding_sources/
+    fs_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$id))
+    fs_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$name))
 
-   ## branch_id
-   branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$id))
-   branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$name))
-   Region_Name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
+    ## branch_id
+    branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$id))
+    branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$name))
+    Region_Name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
 
-  ## LINK 4: GETTING THEME DIFFERENTLY
-  # Theme
-  # Obtaining OM data from the API
+    ## LINK 4: GETTING THEME DIFFERENTLY
+    # Theme
+    # Obtaining OM data from the API
     req <- httr2::request("https://dmapps/api/ppt/themes/")
     # Add custom headers
     req <- req |> httr2::req_headers("Cookie" = cookie)
@@ -808,7 +809,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # Making tweaks https://github.com/j-harbin/dataSPA/issues/34
     #. 1. Change IT to CS
     if (any(str_extract(fundingLevel, "^[^-]+") == "IT")) {
-    fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")] <- str_replace(fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")], "IT", "CS")
+      fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")] <- str_replace(fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")], "IT", "CS")
     }
     #. 2. Change GS-STS to GL-MAN
     if (any(grepl("GS--STS", fundingLevel))) {
@@ -974,119 +975,119 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type %in% c("om", "salary")) {
-  index$section_id <- 0
-  # Adding ids in SAL
-  # section_id (TO-BE DELETE still a problem)
-  for (i in seq_along(section_name)) {
-    # Account for duplicated names
-    if (section_name[i] %in% duplicatedNamesSection) {
-      # find what region is the section display for the identified
-      # SAL and see what SECTION_NAME has that region and then fill in relevant section_id
-      KEEP <- which(grepl(section_name[i], index$section_display))
-      if (!(length(KEEP)) == 0) {
-      r <- index$section_display[KEEP]
-      r <- trimws(strsplit(r, "-")[[1]][1], "right")
-      if (grepl(r, SECTION_NAME[i])) {
-        index$section_id[KEEP] <- section_id[i]
-      }
-      }
-    } else {
-      index$section_id[which(grepl(section_name[i], index$section_display))] <- section_id[i]
-    }
-  }
-
-  # division_id (DONE)
-  index$division_id <- 0
-  for (i in seq_along(division_name)) {
-    # Account for duplicated names
-    if (division_name[i] %in% duplicatedNamesDivision) {
-      if (!(length(KEEP) == 0)) {
-      KEEP <- which(grepl(division_name[i], index$section_display))
-      if (!(length(KEEP) == 0)) {
-      r <- index$section_display[KEEP]
-      r <- trimws(strsplit(r, "-")[[1]][3], "right")
-      r <- trimws(r, "left")
-      if (grepl(r, DIVISION_NAME[i])) {
-        index$division_id[KEEP] <- division_id[i]
-      }
-      }
-      }
-    } else {
-      KEEP <- which(grepl(division_name[i], index$section_display))
-      if (!(length(KEEP) == 0)) {
-      index$division_id[KEEP] <- division_id[i]
+    index$section_id <- 0
+    # Adding ids in SAL
+    # section_id (TO-BE DELETE still a problem)
+    for (i in seq_along(section_name)) {
+      # Account for duplicated names
+      if (section_name[i] %in% duplicatedNamesSection) {
+        # find what region is the section display for the identified
+        # SAL and see what SECTION_NAME has that region and then fill in relevant section_id
+        KEEP <- which(grepl(section_name[i], index$section_display))
+        if (!(length(KEEP)) == 0) {
+          r <- index$section_display[KEEP]
+          r <- trimws(strsplit(r, "-")[[1]][1], "right")
+          if (grepl(r, SECTION_NAME[i])) {
+            index$section_id[KEEP] <- section_id[i]
+          }
+        }
       } else {
-        # Find if any division names end in (Pacific)
-        # Find if there is a ( in the string
-        paren <- grepl("\\(", division_name[i])
-        if (paren) {
-          k1 <- strsplit(division_name[i], " \\(")[[1]][1]
-          k2 <- strsplit(division_name[i], " \\(")[[1]][2]
-          k2 <- strsplit(k2, "\\)")[[1]][1]
-          k3 <- paste0(k1, " \\(", k2, "\\)")
-          KEEP <- which(grepl(k3, index$section_display))
+        index$section_id[which(grepl(section_name[i], index$section_display))] <- section_id[i]
+      }
+    }
+
+    # division_id (DONE)
+    index$division_id <- 0
+    for (i in seq_along(division_name)) {
+      # Account for duplicated names
+      if (division_name[i] %in% duplicatedNamesDivision) {
+        if (!(length(KEEP) == 0)) {
+          KEEP <- which(grepl(division_name[i], index$section_display))
+          if (!(length(KEEP) == 0)) {
+            r <- index$section_display[KEEP]
+            r <- trimws(strsplit(r, "-")[[1]][3], "right")
+            r <- trimws(r, "left")
+            if (grepl(r, DIVISION_NAME[i])) {
+              index$division_id[KEEP] <- division_id[i]
+            }
+          }
+        }
+      } else {
+        KEEP <- which(grepl(division_name[i], index$section_display))
+        if (!(length(KEEP) == 0)) {
           index$division_id[KEEP] <- division_id[i]
+        } else {
+          # Find if any division names end in (Pacific)
+          # Find if there is a ( in the string
+          paren <- grepl("\\(", division_name[i])
+          if (paren) {
+            k1 <- strsplit(division_name[i], " \\(")[[1]][1]
+            k2 <- strsplit(division_name[i], " \\(")[[1]][2]
+            k2 <- strsplit(k2, "\\)")[[1]][1]
+            k3 <- paste0(k1, " \\(", k2, "\\)")
+            KEEP <- which(grepl(k3, index$section_display))
+            index$division_id[KEEP] <- division_id[i]
+          }
         }
       }
     }
-  }
 
-  # region_id (DONE)
-  regions <- unlist(lapply(index$section_display, function(x) trimws(strsplit(x, "-")[[1]][1], "right")))
-  index$region_id <- 0
+    # region_id (DONE)
+    regions <- unlist(lapply(index$section_display, function(x) trimws(strsplit(x, "-")[[1]][1], "right")))
+    index$region_id <- 0
 
-  for (i in seq_along(region_name)) {
-    KEEPID <- which(regions == region_name[i])
-    if (!(length(KEEPID) == 0)) {
-    index$region_id[KEEPID] <- region_id[i]
+    for (i in seq_along(region_name)) {
+      KEEPID <- which(regions == region_name[i])
+      if (!(length(KEEPID) == 0)) {
+        index$region_id[KEEPID] <- region_id[i]
+      }
     }
-  }
-  # fs_id (DONE)
-  index$funding_id <- 0
-  for (i in seq_along(fs_name)) {
-    KEEP <- which(grepl(fs_name[i], index$funding_source_display))
-    if (!(length(KEEP) == 0)) {
-    index$funding_id[KEEP] <- fs_id[i]
-    } else {
-      # Look to see if there is B-base at the end (see issue 1)
-      KEEP <- which(index$funding_source_display == paste0(fs_name[i], " (B-base)"))
-      index$funding_id[KEEP] <- fs_id[i]
+    # fs_id (DONE)
+    index$funding_id <- 0
+    for (i in seq_along(fs_name)) {
+      KEEP <- which(grepl(fs_name[i], index$funding_source_display))
+      if (!(length(KEEP) == 0)) {
+        index$funding_id[KEEP] <- fs_id[i]
+      } else {
+        # Look to see if there is B-base at the end (see issue 1)
+        KEEP <- which(index$funding_source_display == paste0(fs_name[i], " (B-base)"))
+        index$funding_id[KEEP] <- fs_id[i]
+      }
     }
-  }
 
-  # theme_id
-  index$theme_id <- 0
-  for (i in seq_along(themeNumbers)) {
-    KEEP <- which(index$theme == themeNames[i])
-    if (!(length(KEEP) == 0)) {
-    index$theme_id[KEEP] <- themeNumbers[i]
+    # theme_id
+    index$theme_id <- 0
+    for (i in seq_along(themeNumbers)) {
+      KEEP <- which(index$theme == themeNames[i])
+      if (!(length(KEEP) == 0)) {
+        index$theme_id[KEEP] <- themeNumbers[i]
+      }
     }
-  }
 
-  ## tags / tag_id
-  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$id))
-  project_title <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$title))
-  tags_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$tags_display))
+    ## tags / tag_id
+    project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$id))
+    project_title <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$title))
+    tags_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$tags_display))
 
-  ## branch_id
-  index$branch_id <- 0
-  for (b in seq_along(branch_id)) {
-    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(Region_Name[b], index$section_display))] <- branch_id[b]
-  }
+    ## branch_id
+    index$branch_id <- 0
+    for (b in seq_along(branch_id)) {
+      index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(Region_Name[b], index$section_display))] <- branch_id[b]
+    }
 
   }
   ## om_id
   if (type == "om") {
-  om_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$id))
-  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_id))
-  project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_year_id))
-  om_amount <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$amount))
-  category_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$category_display))
+    om_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$id))
+    project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_id))
+    project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_year_id))
+    om_amount <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$amount))
+    category_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$category_display))
 
-  index$om_id <- 0
-  for (p in seq_along(project_id)) {
-    index$om_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$category_display == category_display[p] & index$amount == om_amount[p])] <- om_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & category_display == category_display[p] & om_amount == om_amount[p])]
-  }
+    index$om_id <- 0
+    for (p in seq_along(project_id)) {
+      index$om_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$category_display == category_display[p] & index$amount == om_amount[p])] <- om_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & category_display == category_display[p] & om_amount == om_amount[p])]
+    }
   }
 
   if (type == "salary") {
@@ -1233,76 +1234,128 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     return(st)
   }
 
-  #to edit!!
+  # this code converts PPT fieldnotes output into a useable format.
+  # 9 dataframes get created. Each dataframe contains a different type of information about ALL of the fieldnotes projects submitted in the PPT.
+  # The "project" field links the dataframes to each other.
   if (type == "fieldnotes") {
-    # st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 15), row.names = NULL)
-    # names(st) <- c("project_id","target_completion_date_display", "status_display", "supporting_resources",
-    #                "major_accomplishments", "major_issues", "excess_funds_comment", "excess_funds_amt", "excess_funds",
-    #                "insufficient_funds", "insufficient_funds_amt", "insufficient_funds_comment",
-    #                "rationale_for_modified_completion_date", "general_comment", "project_year")
-    #
-    #
-    # for (i in seq_along(API_DATA[[1]])) {
-    #   for (j in seq_along(names(st))) {
-    #     parameter <- API_DATA[[1]][[i]][[names(st[j])]]
-    #     if (is.null(parameter)) {
-    #       API_DATA[[1]][[i]][[names(st[j])]] <- 0
-    #     }
-    #     st[[names(st[j])]][[i]] <- API_DATA[[1]][[i]][[names(st[j])]]
-    #   }
-    # }
-    # st$general_comment <- unlist(lapply(API_DATA[[1]], function(x) x$general_comment))
-    # st$rationale_for_modified_completion_date <- unlist(lapply(API_DATA[[1]], function(x) x$rationale_for_modified_completion_date))
-    # # Now add fiscal year in from the project_year id
-    #
-    # # Dealing with [[2]]
-    # # Dealing with project
-    # df <- lapply(API_DATA[[2]], function(x) x$project)
-    #
-    # for (i in seq_along(df)) {
-    #   for (j in seq_along(names(df[[1]]))) {
-    #     parameter <- df[[i]][[names(df[[1]][j])]]
-    #     if (is.null(parameter)) {
-    #       df[[i]][[names(df[[1]][j])]] <- 0
-    #     }
-    #   }
-    # }
-    # # Turning into data frames for project_id
-    # DF <- data.frame(matrix(NA, nrow = length(API_DATA[[2]]), ncol = 2), row.names = NULL)
-    # names(DF) <- c("title", "project_id")
-    # DF$title <- unlist(lapply(df, function(x) x$title))
-    # DF$project_id <- unlist(lapply(df, function(x) x$id))
-    #
-    # # Dealing with year
-    # df2 <- lapply(API_DATA[[2]], function(x) x$project$years)
-    # df22 <- do.call(c, df2)
-    # for (i in seq_along(df22)) {
-    #   for (j in seq_along(names(df22[[1]]))) {
-    #     parameter <- df22[[i]][[names(df22[[1]][j])]]
-    #     if (is.null(parameter)) {
-    #       df22[[i]][[names(df22[[1]][j])]] <- 0
-    #     }
-    #   }
-    # }
-    # DF2 <- data.frame(matrix(NA, nrow = length(df22), ncol = 4), row.names = NULL)
-    # names(DF2) <- c("year_id", "fiscal_year", "project_title", "project_id")
-    # DF2$year_id <- unlist(lapply(df22, function(x) x$id))
-    # DF2$project_title <- unlist(lapply(df22, function(x) x$project_title))
-    # DF2$fiscal_year <- unlist(lapply(df22, function(x) x$display_name))
-    # DF2$project_id <- unlist(lapply(df22, function(x) x$project))
-    #
-    # st_id <- st$project_id
-    # st$project_title <- 0
-    # st$fiscal_year <- 0
-    # for (i in seq_along(st_id)) {
-    #   st$project_title[i] <- unique(DF$title[which(DF$project_id == st_id[i])])
-    # }
-    # for (i in seq_along(st_id)) {
-    #   st$fiscal_year[i] <- unique(DF2$fiscal_year[which(DF2$year_id == st$project_year[i])])
-    #
-    # }
-    #
-    # return(st)
-  }
+    fieldnotes <- API_DATA$`https://dmapps/api/ppt/field-notes/?export=true`
 
+    meta <- lapply(X = fieldnotes, FUN = function(x) rbind(x[!names(x) %in% c("primary_contact", "images", "links", "geo_tags", "collaborators", "linked_project_ids", "compliance_report")]))
+    meta <- as.data.frame(do.call(rbind, meta))
+    meta$project <- 1:length(fieldnotes)
+
+    geotags <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$geo_tags)>0){
+        for(j in 1:length(fieldnotes[[i]]$geo_tags)){
+          fieldnotes[[i]]$geo_tags[[j]] <- replace(fieldnotes[[i]]$geo_tags[[j]], lengths(fieldnotes[[i]]$geo_tags[[j]])== 0, NA)
+          wkts <- data.frame(project=i,
+                             name=fieldnotes[[i]]$geo_tags[[j]]$name,
+                             nom=fieldnotes[[i]]$geo_tags[[j]]$nom,
+                             wkts = fieldnotes[[i]]$geo_tags[[j]]$wkts[[1]])
+          geotags <- rbind(geotags, wkts)
+        }
+      }
+    }
+
+    images <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$images)>0){
+        for(j in 1:length(fieldnotes[[i]]$images)){
+          fieldnotes[[i]]$images[[j]] <- replace(fieldnotes[[i]]$images[[j]], lengths(fieldnotes[[i]]$images[[j]])== 0, NA)
+          urls <- data.frame(project = i,
+                             url = fieldnotes[[i]]$images[[j]]$image_url,
+                             cap_en = fieldnotes[[i]]$images[[j]]$caption_en,
+                             cap_fr = fieldnotes[[i]]$images[[j]]$caption_fr,
+                             photo_credit = fieldnotes[[i]]$images[[j]]$photo_credit)
+          images <- rbind(images, urls)
+        }
+      }
+    }
+
+    contacts <- NULL
+    for(i in 1:length(fieldnotes)){
+      fieldnotes[[i]]$primary_contact <- replace(fieldnotes[[i]]$primary_contact, lengths(fieldnotes[[i]]$primary_contact)== 0, NA)
+      contact <- as.data.frame(t(data.frame(unlist(fieldnotes[[i]]$primary_contact))))
+      contact$project <- i
+      row.names(contact) <-NULL
+      contacts <- rbind(contacts, contact)
+    }
+
+    collabs <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$collaborators)>0){
+        for(j in 1:length(fieldnotes[[i]]$collaborators)){
+          fieldnotes[[i]]$collaborators[[j]] <- replace(fieldnotes[[i]]$collaborators[[j]], lengths(fieldnotes[[i]]$collaborators[[j]])== 0, NA)
+          collab <- data.frame(project = i,
+                               type_en = fieldnotes[[i]]$collaborators[[j]]$type_en,
+                               type_fr = fieldnotes[[i]]$collaborators[[j]]$type_fr,
+                               org_en = fieldnotes[[i]]$collaborators[[j]]$organization_en,
+                               org_fr = fieldnotes[[i]]$collaborators[[j]]$organization_fr)
+          collabs <- rbind(collabs, collab)
+        }
+      }
+    }
+
+    ppts <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$linked_project_ids)>0){
+        for(j in 1:length(fieldnotes[[i]]$linked_project_ids)){
+          fieldnotes[[i]]$linked_project_ids[[j]] <- replace(fieldnotes[[i]]$linked_project_ids[[j]], lengths(fieldnotes[[i]]$linked_project_ids[[j]])== 0, NA)
+          ppt <- data.frame(project = i,
+                            ppt_id = fieldnotes[[i]]$linked_project_ids[[j]])
+          ppts <- rbind(ppts, ppt)
+        }
+      }
+    }
+
+    links <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$links)>0){
+        for(j in 1:length(fieldnotes[[i]]$links)){
+          fieldnotes[[i]]$links[[j]] <- replace(fieldnotes[[i]]$links[[j]], lengths(fieldnotes[[i]]$links[[j]])== 0, NA)
+          link <- data.frame(project = i,
+                             type=fieldnotes[[i]]$links[[j]]$type,
+                             title_en=fieldnotes[[i]]$links[[j]]$title_en,
+                             title_fr=fieldnotes[[i]]$links[[j]]$title_fr,
+                             url_en=fieldnotes[[i]]$links[[j]]$url_en,
+                             url_en_html=fieldnotes[[i]]$links[[j]]$url_en_html,
+                             url_fr=fieldnotes[[i]]$links[[j]]$url_fr,
+                             url_fr_html=fieldnotes[[i]]$links[[j]]$url_fr_html)
+          links <- rbind(links, link)
+        }
+      }
+    }
+
+    compliance <- NULL
+    feedback <- NULL
+    for(i in 1:length(fieldnotes)){
+      if(length(fieldnotes[[i]]$compliance_report)>0){
+        fieldnotes[[i]]$compliance_report <- replace(fieldnotes[[i]]$compliance_report, lengths(fieldnotes[[i]]$compliance_report)== 0, NA)
+        comp <- as.data.frame(t(data.frame(unlist(fieldnotes[[i]]$compliance_report[c("score_denominator", "score", "percentage")]))))
+        comp$project <- i
+        row.names(comp) <-NULL
+        compliance <- rbind(compliance, comp)
+
+        for(j in 1:length(fieldnotes[[i]]$compliance_report$feedback)){
+          fieldnotes[[i]]$compliance_report$feedback[[j]] <- replace(fieldnotes[[i]]$compliance_report$feedback[[j]], lengths(fieldnotes[[i]]$compliance_report$feedback[[j]])== 0, NA)
+          feed <- data.frame(project = i,
+                             feedback = fieldnotes[[i]]$compliance_report$feedback[[j]])
+          feedback <- rbind(feedback, feed)
+        }
+      }
+    }
+
+    fieldnotes <- list(overview=meta,
+                       ppt_project=ppts,
+                       contact=contacts,
+                       collaborators=collabs,
+                       map=geotags,
+                       images=images,
+                       links=links,
+                       compliance=compliance,
+                       feedback=feedback)
+    return(fieldnotes)
+  }
 }
+
